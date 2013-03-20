@@ -1,0 +1,28 @@
+{
+  "name": "node-s3",
+  "version": "0.1.0",
+  "description": "A simple Amazon S3 node.js integration",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/pumodo/node-s3.git"
+  },
+  "dependencies": {
+    "curly": ">=0.4.2",
+    "common": ">=0.2.1"
+  },
+  "keywords": [
+    "s3",
+    "aws",
+    "storage"
+  ],
+  "author": "Pumodo <dev@pumodo.com>",
+  "contributors": [
+    "Thomas Watson Steen <thomas@pumodo.com>"
+  ],
+  "license": "MIT",
+  "readmeFilename": "README.md"
+}
