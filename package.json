@@ -23,5 +23,6 @@
     "Thomas Watson Steen <thomas@pumodo.com>"
   ],
   "license": "MIT",
-  "readmeFilename": "README.md"
+  "readmeFilename": "README.md",
+  "gitHead": "da7a73248ced67dda220e80266459b1efd480717"
 }
