@@ -39,8 +39,7 @@ var signer = function (publicKey, secretKey) {
 
   return function (verb, resource, headers) {
     headers = headers || {};
-    headers.date = new Date().toUTCString();
-    headers['x-amz-date'] = headers.date;
+    headers['x-amz-date'] = (new Date()).toUTCString();
 
     var stringToSign = getStringToSign(verb, resource, headers);
     var hash = crypto.createHmac('sha1', secretKey).update(stringToSign).digest('base64');
