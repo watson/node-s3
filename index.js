@@ -13,14 +13,18 @@ var signer = function (publicKey, secretKey) {
       ''
     ];
 
-    if (headers['x-amz-acl'])
-      res.push('x-amz-acl:' + headers['x-amz-acl']);
-    if (headers['x-amz-copy-source'])
-      res.push('x-amz-copy-source:' + headers['x-amz-copy-source']);
-    if (headers['x-amz-date'])
-      res.push('x-amz-date:' + headers['x-amz-date']);
-    if (headers['x-amz-storage-class'])
-      res.push('x-amz-storage-class:' + headers['x-amz-storage-class']);
+    Object.keys(headers)
+      .filter(function (header) {
+        return header.indexOf('x-amz-') === 0;
+      })
+      .sort(function (a, b) {
+        if (a > b) return 1;
+        if (a < b) return -1;
+        return 0;
+      })
+      .forEach(function (header) {
+        res.push(header + ':' + headers[header]);
+      });
 
     res.push(resource);
 
