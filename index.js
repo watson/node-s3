@@ -5,7 +5,7 @@ var crypto = require('crypto');
 var parseURL = require('url').parse;
 
 var signer = function (publicKey, secretKey) {
-  var stringToSign = function (verb, resource, headers) {
+  var getStringToSign = function (verb, resource, headers) {
     var lowerCaseHeaders = {};
 
     Object.keys(headers).forEach(function (header) {
@@ -42,7 +42,8 @@ var signer = function (publicKey, secretKey) {
     headers.date = new Date().toUTCString();
     headers['x-amz-date'] = headers.date;
 
-    var hash = crypto.createHmac('sha1', secretKey).update(stringToSign(verb, resource, headers)).digest('base64');
+    var stringToSign = getStringToSign(verb, resource, headers);
+    var hash = crypto.createHmac('sha1', secretKey).update(stringToSign).digest('base64');
 
     headers.authorization = 'AWS ' + publicKey + ':' + hash;
 
