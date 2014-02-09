@@ -6,14 +6,20 @@ var parseURL = require('url').parse;
 
 var signer = function (publicKey, secretKey) {
   var stringToSign = function (verb, resource, headers) {
+    var lowerCaseHeaders = {};
+
+    Object.keys(headers).forEach(function (header) {
+      lowerCaseHeaders[header.toLowerCase()] = headers[header];
+    });
+
     var res = [
       verb,
-      headers['content-md5'] || '',
-      headers['content-type'] || '',
+      lowerCaseHeaders['content-md5'] || '',
+      lowerCaseHeaders['content-type'] || '',
       ''
     ];
 
-    Object.keys(headers)
+    Object.keys(lowerCaseHeaders)
       .filter(function (header) {
         return header.indexOf('x-amz-') === 0;
       })
@@ -23,7 +29,7 @@ var signer = function (publicKey, secretKey) {
         return 0;
       })
       .forEach(function (header) {
-        res.push(header + ':' + headers[header]);
+        res.push(header + ':' + lowerCaseHeaders[header]);
       });
 
     res.push(resource);
