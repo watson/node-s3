@@ -22,10 +22,7 @@
     "storage",
     "amazon"
   ],
-  "author": "Pumodo <dev@pumodo.com>",
-  "contributors": [
-    "Thomas Watson Steen <w@tson.dk>"
-  ],
+  "author": "Thomas Watson Steen <w@tson.dk>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/pumodo/node-s3/issues"
