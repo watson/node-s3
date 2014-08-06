@@ -27,6 +27,8 @@
     "Thomas Watson Steen <w@tson.dk>"
   ],
   "license": "MIT",
-  "readmeFilename": "README.md",
-  "gitHead": "da7a73248ced67dda220e80266459b1efd480717"
+  "bugs": {
+    "url": "https://github.com/pumodo/node-s3/issues"
+  },
+  "homepage": "https://github.com/pumodo/node-s3"
 }
