@@ -46,3 +46,13 @@ test('should require key/secret', function (t) {
   t.ok(failed, 'did throw exception');
   t.end();
 });
+
+test('should expose 5 HTTP verbs as functions', function (t) {
+  var s3 = nodes3('s3://key:secret@bucket.s3.amazonaws.com');
+  t.equal(typeof s3.put, 'function', 'PUT');
+  t.equal(typeof s3.post, 'function', 'POST');
+  t.equal(typeof s3.get, 'function', 'GET');
+  t.equal(typeof s3.del, 'function', 'DELETE');
+  t.equal(typeof s3.head, 'function', 'HEAD');
+  t.end();
+});
