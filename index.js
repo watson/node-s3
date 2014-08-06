@@ -5,6 +5,8 @@ var crypto = require('crypto');
 var parseURL = require('url').parse;
 
 var signer = function (key, secret) {
+  if (!key || !secret) throw new Error('S3 key and secret are required!');
+
   var getStringToSign = function (verb, resource, headers) {
     var lowerCaseHeaders = {};
 
