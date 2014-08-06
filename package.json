@@ -4,7 +4,7 @@
   "description": "A simple Amazon S3 node.js integration",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "node test.js"
   },
   "repository": {
     "type": "git",
@@ -12,6 +12,9 @@
   },
   "dependencies": {
     "curly": ">=0.6.0"
+  },
+  "devDependencies": {
+    "tape": "^2.14.0"
   },
   "keywords": [
     "s3",
