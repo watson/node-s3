@@ -68,13 +68,10 @@ module.exports = function (options) {
   ['put', 'post', 'get', 'del', 'head'].forEach(function (method) {
     var verb = method.replace('del', 'delete').toUpperCase();
 
-    that[method] = function (pathname, options, callback) {
-      var signing = '/' + that.bucket + that.pathname + pathname;
+    that[method] = function request(pathname, options, callback) {
+      if (typeof options === 'function') return request(pathname, null, options);
 
-      if (typeof options === 'function') {
-        callback = options;
-        options = {};
-      }
+      var signing = '/' + that.bucket + that.pathname + pathname;
 
       options = options || {};
       options.pool = false;
