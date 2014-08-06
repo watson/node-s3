@@ -50,7 +50,7 @@ var signer = function (publicKey, secretKey) {
   };
 };
 
-exports.create = function (options) {
+module.exports = function (options) {
   var that = {},
       auth, publicKey, secretKey, sign, prefix;
 

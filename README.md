@@ -16,7 +16,7 @@ First initialize the node-s3 module with a URI to your S3 bucket
 
 ```javascript
 var s3Url = '...'; // s3://{key}:{secret}@{bucket}.s3.amazonaws.com
-var s3 = require('node-s3').create(s3Url);
+var s3 = require('node-s3')(s3Url);
 ```
 
 It's important that the key/secret provided have write permissions to
