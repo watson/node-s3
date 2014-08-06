@@ -11,10 +11,10 @@
     "url": "git://github.com/pumodo/node-s3.git"
   },
   "dependencies": {
-    "curly": ">=0.6.0"
+    "curly": "0.6.x"
   },
   "devDependencies": {
-    "tape": "2.14.x"
+    "tape": "^2.14.0"
   },
   "keywords": [
     "s3",
