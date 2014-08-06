@@ -59,9 +59,9 @@ module.exports = function (options) {
   options = typeof options === 'string' ? parseURL(options) : options;
 
   that.pathname = options.pathname || '';
-  that.bucket = options.hostname.split('.')[0];
+  that.bucket = options.bucket || options.hostname.split('.')[0];
 
-  auth = options.auth.split(':');
+  auth = options.auth ? options.auth.split(':') : [options.key, options.secret];
   sign = signer(auth[0], auth[1]);
   prefix = that.bucket + '.s3.amazonaws.com' + that.pathname;
 

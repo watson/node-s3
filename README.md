@@ -22,6 +22,18 @@ var s3 = require('node-s3')(s3Url);
 It's important that the key/secret provided have write permissions to
 the bucket.
 
+Alternatively initialize with an options object:
+
+```javascript
+var options = {
+  key: '...',
+  secret: '...',
+  bucket: '...',
+  pathname: '/foo' // optional: prefix all S3 keys with this path
+};
+var s3 = require('node-s3')(options);
+```
+
 ### Uploading
 
 Example 1: Upload a Buffer to S3
