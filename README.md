@@ -2,6 +2,8 @@
 
 A simple Amazon S3 node.js integration.
 
+[![Build Status](https://travis-ci.org/watson/node-s3.png)](https://travis-ci.org/watson/node-s3)
+
 ## Install
 
 ```
