@@ -4,7 +4,7 @@ var curly = require('curly');
 var crypto = require('crypto');
 var parseURL = require('url').parse;
 
-var signer = function (publicKey, secretKey) {
+var signer = function (key, secret) {
   var getStringToSign = function (verb, resource, headers) {
     var lowerCaseHeaders = {};
 
@@ -42,9 +42,9 @@ var signer = function (publicKey, secretKey) {
     headers['x-amz-date'] = (new Date()).toUTCString();
 
     var stringToSign = getStringToSign(verb, resource, headers);
-    var hash = crypto.createHmac('sha1', secretKey).update(stringToSign).digest('base64');
+    var hash = crypto.createHmac('sha1', secret).update(stringToSign).digest('base64');
 
-    headers.authorization = 'AWS ' + publicKey + ':' + hash;
+    headers.authorization = 'AWS ' + key + ':' + hash;
 
     return headers;
   };
@@ -52,7 +52,7 @@ var signer = function (publicKey, secretKey) {
 
 module.exports = function (options) {
   var that = {},
-      auth, publicKey, secretKey, sign, prefix;
+      auth, sign, prefix;
 
   options = typeof options === 'string' ? parseURL(options) : options;
 
@@ -60,10 +60,7 @@ module.exports = function (options) {
   that.bucket = options.hostname.split('.')[0];
 
   auth = options.auth.split(':');
-  publicKey = auth[0];
-  secretKey = auth[1];
-
-  sign = signer(publicKey, secretKey);
+  sign = signer(auth[0], auth[1]);
   prefix = that.bucket + '.s3.amazonaws.com' + that.pathname;
 
   ['put', 'post', 'get', 'del', 'head'].forEach(function (method) {
