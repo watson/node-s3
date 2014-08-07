@@ -37,13 +37,10 @@ test('should not require a prefix', function (t) {
 });
 
 test('should require key/secret', function (t) {
-  var failed = false;
-  try {
+  var fn = function () {
     nodes3('s3://bucket.s3.amazonaws.com');
-  } catch (e) {
-    failed = true;
   }
-  t.ok(failed, 'did throw exception');
+  t.throws(fn, 'S3 key and secret are required!');
   t.end();
 });
 
