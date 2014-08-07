@@ -69,7 +69,10 @@ module.exports = function (options) {
     var verb = method.replace('del', 'delete').toUpperCase();
 
     that[method] = function request(pathname, options, callback) {
-      if (typeof options === 'function') return request(pathname, null, options);
+      if (typeof options === 'function')
+        return request(pathname, null, options);
+      if (typeof options === 'string' || options instanceof Buffer)
+        return request(pathname, { body: options }, callback);
 
       var signing = '/' + that.bucket + that.pathname + pathname;
 

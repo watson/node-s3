@@ -1,5 +1,6 @@
 'use strict';
 
+var util = require('util');
 var http = require('http');
 var events = require('events');
 var test = require('tape');
@@ -82,5 +83,18 @@ test('should complete a GET request', function (t) {
     t.ok(!!~body.indexOf('<Code>InvalidAccessKeyId</Code>'), 'respond with InvalidAccessKeyId');
     t.equal(res.statusCode, 403, 'give 403 status-code');
     t.end();
+  });
+});
+
+[{ body: 'foobar' }, 'foobar', new Buffer('foobar')].forEach(function (options) {
+  test('should complete a POST request with: ' + util.inspect(options), function (t) {
+    var s3 = nodes3('s3://key:secret@bucket.s3.amazonaws.com');
+    s3.post('/foo', options, function (err, res, body) {
+      t.equal(err, null, 'have no error');
+      t.ok(res instanceof http.IncomingMessage, 'have an IncomingMessage');
+      t.ok(!!~body.indexOf('<Code>InvalidAccessKeyId</Code>'), 'respond with InvalidAccessKeyId');
+      t.equal(res.statusCode, 403, 'give 403 status-code');
+      t.end();
+    });
   });
 });

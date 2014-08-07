@@ -38,10 +38,10 @@ var s3 = require('node-s3')(options);
 
 ### Uploading
 
-Example 1: Upload a Buffer to S3
+Example 1: Upload a body
 
 ```javascript
-s3.put('/some-s3-key', { body: buffer }, callback);
+s3.put('/some-s3-key', body, callback);
 ```
 
 Example 2: Pipe an incoming http request directly to S3
@@ -62,16 +62,32 @@ Common for all functions on the s3 object returned from the node-s3
 constructor is that they take up to 3 arguemnts:
 
 - `key` - The requested S3 key (required). Will be concatinated with the optional pathname given upon initalization
-- `options` - Optional options hash. Can among other things contain HTTP headers sent along with the content
-- `callback` - Optional callback called with (err, response, body)
+- `body` or `options` - Optional body or options hash
+- `callback` - Optional callback called with (err, response, body).
+
+In any case, an instance of [curly](https://github.com/mafintosh/curly)
+is returned which you among other things can pipe your data to.
+
+Options or body:
+
+The 2nd argument can either be a string, Buffer og an options hash. The
+first two should be rather self explanatory, and the options hash can be
+used to provide custom headers as well as a body to the S3 request:
+
+```javascript
+var options = {
+  headers: { ... },
+  body: '...'
+};
+```
 
 Functions:
 
-- `s3.head(key, options, callback)` - Perform a HEAD request
-- `s3.get(key, options, callback)` - Perform a GET request
-- `s3.post(key, options, callback)` - Perform a POST request
-- `s3.put(key, options, callback)` - Perform a PUT request
-- `s3.del(key, options, callback)` - Perform a DELETE request
+- `s3.head(key, options || body, callback)` - Perform a HEAD request
+- `s3.get(key, options || body, callback)` - Perform a GET request
+- `s3.post(key, options || body, callback)` - Perform a POST request
+- `s3.put(key, options || body, callback)` - Perform a PUT request
+- `s3.del(key, options || body, callback)` - Perform a DELETE request
 
 ## License
 
