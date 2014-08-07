@@ -1,5 +1,7 @@
 'use strict';
 
+var http = require('http');
+var events = require('events');
 var test = require('tape');
 var nodes3 = require('./');
 
@@ -52,4 +54,33 @@ test('should expose 5 HTTP verbs as functions', function (t) {
   t.equal(typeof s3.del, 'function', 'DELETE');
   t.equal(typeof s3.head, 'function', 'HEAD');
   t.end();
+});
+
+test('should return an EventEmitter', function (t) {
+  var s3 = nodes3('s3://key:secret@bucket.s3.amazonaws.com');
+  var req = s3.head('/foo');
+  t.ok(req instanceof events.EventEmitter, 'return an EventEmitter');
+  t.end();
+});
+
+test('should complete a HEAD request', function (t) {
+  var s3 = nodes3('s3://key:secret@bucket.s3.amazonaws.com');
+  s3.head('/foo', function (err, res, body) {
+    t.equal(err, null, 'have no error');
+    t.ok(res instanceof http.IncomingMessage, 'have an IncomingMessage');
+    t.equal(body, '', 'have no body');
+    t.equal(res.statusCode, 403, 'give 403 status-code');
+    t.end();
+  });
+});
+
+test('should complete a GET request', function (t) {
+  var s3 = nodes3('s3://key:secret@bucket.s3.amazonaws.com');
+  s3.get('/foo', function (err, res, body) {
+    t.equal(err, null, 'have no error');
+    t.ok(res instanceof http.IncomingMessage, 'have an IncomingMessage');
+    t.ok(!!~body.indexOf('<Code>InvalidAccessKeyId</Code>'), 'respond with InvalidAccessKeyId');
+    t.equal(res.statusCode, 403, 'give 403 status-code');
+    t.end();
+  });
 });
