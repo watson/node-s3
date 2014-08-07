@@ -56,6 +56,23 @@ http.createServer(function (req, res) {
 }).listen(3000);
 ```
 
+## API
+
+Common for all functions on the s3 object returned from the node-s3
+constructor is that they take up to 3 arguemnts:
+
+- `key` - The requested S3 key (required). Will be concatinated with the optional pathname given upon initalization
+- `options` - Optional options hash. Can among other things contain HTTP headers sent along with the content
+- `callback` - Optional callback called with (err, response, body)
+
+Functions:
+
+- `s3.head(key, options, callback)` - Perform a HEAD request
+- `s3.get(key, options, callback)` - Perform a GET request
+- `s3.post(key, options, callback)` - Perform a POST request
+- `s3.put(key, options, callback)` - Perform a PUT request
+- `s3.del(key, options, callback)` - Perform a DELETE request
+
 ## License
 
 MIT
