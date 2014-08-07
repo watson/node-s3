@@ -17,7 +17,7 @@ npm install node-s3
 First initialize the node-s3 module with a URI to your S3 bucket
 
 ```javascript
-var s3Url = 'key:secret@your_bucket.s3.amazonaws.com';
+var s3Url = 's3://key:secret@your_bucket.s3.amazonaws.com';
 var s3 = require('node-s3')(s3Url);
 ```
 
