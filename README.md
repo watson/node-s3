@@ -31,7 +31,7 @@ var options = {
   key: '...',
   secret: '...',
   bucket: '...',
-  pathname: '/foo' // optional: prefix all S3 keys with this path
+  prefix: '/foo' // optional: prefix all S3 keys with this path
 };
 var s3 = require('node-s3')(options);
 ```
@@ -44,7 +44,7 @@ Example 1: Upload a body
 s3.put('/some-s3-key', body, callback);
 ```
 
-Example 2: Pipe an incoming http request directly to S3
+Example 2: Pipe an incoming HTTP request directly to S3
 
 ```javascript
 http.createServer(function (req, res) {
@@ -59,9 +59,9 @@ http.createServer(function (req, res) {
 ## API
 
 Common for all functions on the s3 object returned from the node-s3
-constructor is that they take up to 3 arguemnts:
+constructor is that they take up to 3 arguments:
 
-- `key` - The requested S3 key (required). Will be concatinated with the optional pathname given upon initalization
+- `key` - The requested S3 key (required). Will be concatenated with the optional prefix given upon initialization
 - `body` or `options` - Optional body or options hash
 - `callback` - Optional callback called with (err, response, body).
 
