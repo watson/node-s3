@@ -10,6 +10,8 @@ A simple Amazon S3 node.js integration.
 npm install node-s3
 ```
 
+Supported versions: `v0.11`, `v4`, `v5`
+
 ## Usage
 
 ### Initialization
@@ -36,6 +38,15 @@ var options = {
 var s3 = require('node-s3')(options);
 ```
 
+###### WARNING:
+String parsing will **not** work with period ('.') delimited
+bucket names - buckets must be delimited with something other than
+periods. You can still use the options hash and specify the bucket
+name if your buckets include periods.
+
+
+-----------------
+
 ### Uploading
 
 Example 1: Upload a body
@@ -55,6 +66,8 @@ http.createServer(function (req, res) {
   req.pipe(s3Req);
 }).listen(3000);
 ```
+
+-----------
 
 ## API
 
