@@ -1,5 +1,3 @@
-'use strict';
-
 var util = require('util');
 var http = require('http');
 var events = require('events');
@@ -8,7 +6,7 @@ var nodes3 = require('./');
 
 test('should correctly parse a string', function (t) {
   var s3 = nodes3('s3://key:secret@bucket.s3.amazonaws.com/prefix');
-  t.equal(s3.pathname, '/prefix', 'have prefix');
+  t.equal(s3.prefix, '/prefix', 'have prefix');
   t.equal(s3.bucket, 'bucket', 'have bucket');
   t.end();
 });
@@ -18,31 +16,31 @@ test('should correctly parse an object', function (t) {
     key: 'key',
     secret: 'secret',
     bucket: 'bucket',
-    pathname: '/prefix'
+    prefix: '/prefix'
   };
   var s3 = nodes3(options);
-  t.equal(s3.pathname, '/prefix', 'have prefix');
+  t.equal(s3.prefix, '/prefix', 'have prefix');
   t.equal(s3.bucket, 'bucket', 'have bucket');
   t.end();
 });
 
 test('should not require a prefix', function (t) {
   var s3 = nodes3('s3://key:secret@bucket.s3.amazonaws.com');
-  t.equal(s3.pathname, '', 'have empty pathname');
+  t.equal(s3.prefix, '', 'have empty prefix');
   var options = {
     key: 'key',
     secret: 'secret',
     bucket: 'bucket'
   };
   s3 = nodes3(options);
-  t.equal(s3.pathname, '', 'have empty pathname');
+  t.equal(s3.prefix, '', 'have empty prefix');
   t.end();
 });
 
 test('should require key/secret', function (t) {
   var fn = function () {
     nodes3('s3://bucket.s3.amazonaws.com');
-  }
+  };
   t.throws(fn, 'S3 key and secret are required!');
   t.end();
 });
@@ -65,7 +63,7 @@ test('should return an EventEmitter', function (t) {
 });
 
 test('should complete a HEAD request', function (t) {
-  var s3 = nodes3('s3://key:secret@bucket.s3.amazonaws.com');
+  var s3 = nodes3('s3://key:secret@bucket.us-east-1.s3.amazonaws.com');
   s3.head('/foo', function (err, res, body) {
     t.equal(err, null, 'have no error');
     t.ok(res instanceof http.IncomingMessage, 'have an IncomingMessage');

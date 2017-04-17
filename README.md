@@ -10,6 +10,8 @@ A simple Amazon S3 node.js integration.
 npm install node-s3
 ```
 
+Supported versions: `v0.11`, `v4`, `v5`
+
 ## Usage
 
 ### Initialization
@@ -31,10 +33,19 @@ var options = {
   key: '...',
   secret: '...',
   bucket: '...',
-  pathname: '/foo' // optional: prefix all S3 keys with this path
+  prefix: '/foo' // optional: prefix all S3 keys with this path
 };
 var s3 = require('node-s3')(options);
 ```
+
+###### WARNING:
+String parsing will **not** work with period ('.') delimited
+bucket names - buckets must be delimited with something other than
+periods. You can still use the options hash and specify the bucket
+name if your buckets include periods.
+
+
+-----------------
 
 ### Uploading
 
@@ -44,7 +55,7 @@ Example 1: Upload a body
 s3.put('/some-s3-key', body, callback);
 ```
 
-Example 2: Pipe an incoming http request directly to S3
+Example 2: Pipe an incoming HTTP request directly to S3
 
 ```javascript
 http.createServer(function (req, res) {
@@ -56,12 +67,14 @@ http.createServer(function (req, res) {
 }).listen(3000);
 ```
 
+-----------
+
 ## API
 
 Common for all functions on the s3 object returned from the node-s3
-constructor is that they take up to 3 arguemnts:
+constructor is that they take up to 3 arguments:
 
-- `key` - The requested S3 key (required). Will be concatinated with the optional pathname given upon initalization
+- `key` - The requested S3 key (required). Will be concatenated with the optional prefix given upon initialization
 - `body` or `options` - Optional body or options hash
 - `callback` - Optional callback called with (err, response, body).
 

@@ -1,86 +1,103 @@
-'use strict';
-
 var curly = require('curly');
-var crypto = require('crypto');
+var aws4 = require('aws4');
 var parseURL = require('url').parse;
 
-var signer = function (key, secret) {
-  if (!key || !secret) throw new Error('S3 key and secret are required!');
+/**
+ * Creates the node-s3 object which includes
+ * information like:
+ * - prefix: the path prefix
+ * - bucket: the bucket to access
+ * - region: the aws region
+ * - auth: the aws creds
+ *
+ * and HTTP methods:
+ * - put
+ * - post
+ * - get
+ * - del
+ * - head
+ *
+ * for making quick requests to amazon S3. The `options` param should be
+ * one of:
+ * - a valid S3 bucket url (if without region, region will default to `us-east-1`)
+ * - an object consisting of:
+ *   - prefix: the path prefix
+ *   - bucket: the s3 bucket
+ *   - region: the s3 region
+ *   - key: the aws user ID key
+ *   - secret: the aws user secret key
+ *
+ * WARNING: string parsing will **not** work with period ('.') delimited
+ * bucket names - buckets must be delimited with something other than
+ * periods. You can still use the options hash and specify the bucket
+ * name if your buckets include periods.
+ * @param  {object} options The options used to init the requests
+ * @return {object}         The initialized object
+ */
+module.exports = function (options) {
+  var that = {};
+  var tokens;
+  var temp;
 
-  var getStringToSign = function (verb, resource, headers) {
-    var lowerCaseHeaders = {};
+  // Parse string if needed
+  options = typeof options === 'string' ? parseURL(options) : options;
+  tokens = options.hostname ? options.hostname.split('.') : [];
 
-    Object.keys(headers).forEach(function (header) {
-      lowerCaseHeaders[header.toLowerCase()] = headers[header];
-    });
+  // Find region if present
+  // Doesn't work with period delimited buckets
+  if (!options.region && tokens.length === 5) {
+    options.region = tokens[1];
+  }
 
-    var res = [
-      verb,
-      lowerCaseHeaders['content-md5'] || '',
-      lowerCaseHeaders['content-type'] || '',
-      ''
-    ];
+  // Populate instance info
+  that.prefix = options.prefix || options.pathname || '';
+  that.bucket = options.bucket || tokens[0];
+  that.region = options.region || 'us-east-1';
+  temp = options.auth ?
+    options.auth.split(':') : [options.key, options.secret];
+  that.auth = {
+    accessKeyId: temp[0],
+    secretAccessKey: temp[1]
+  };
 
-    Object.keys(lowerCaseHeaders)
-      .filter(function (header) {
-        return header.indexOf('x-amz-') === 0;
-      })
-      .sort(function (a, b) {
-        if (a > b) return 1;
-        if (a < b) return -1;
-        return 0;
-      })
-      .forEach(function (header) {
-        res.push(header + ':' + lowerCaseHeaders[header]);
+  // Check for AWS creds
+  if (!that.auth.accessKeyId || !that.auth.secretAccessKey) {
+    throw 'S3 key and secret are required!';
+  }
+
+  /**
+   * Populate HTTP methods
+   */
+  ['put', 'post', 'get', 'del', 'head'].forEach(function (method) {
+    var verb = method === 'del' ? 'DELETE' : method.toUpperCase();
+    var host = that.bucket + '.s3.amazonaws.com';
+
+    that[method] = function request(path, opts, callback) {
+
+      // extend curly
+      var awsRequest = curly.use(function (req) {
+        req.service = 's3';
+        req.region = that.region;
+        req.host = host;
+        req.method = method;
+        req.path = that.prefix + path;
+        req.url = req.host + req.path;
+        aws4.sign(req, that.auth);
+        return curly(req);
       });
 
-    res.push(resource);
+      // Deal with incomplete params
+      if (typeof opts === 'function') {
+        return awsRequest(path, null, opts);
+      }
+      if (typeof opts === 'string' || opts instanceof Buffer) {
+        return awsRequest(path, { body: opts }, callback);
+      }
 
-    return res.join('\n');
-  };
+      opts = opts || {};
+      opts.pool = false;
 
-  return function (verb, resource, headers) {
-    headers = headers || {};
-    headers['x-amz-date'] = (new Date()).toUTCString();
-
-    var stringToSign = getStringToSign(verb, resource, headers);
-    var hash = crypto.createHmac('sha1', secret).update(stringToSign).digest('base64');
-
-    headers.authorization = 'AWS ' + key + ':' + hash;
-
-    return headers;
-  };
-};
-
-module.exports = function (options) {
-  var that = {},
-      auth, sign, prefix;
-
-  options = typeof options === 'string' ? parseURL(options) : options;
-
-  that.pathname = options.pathname || '';
-  that.bucket = options.bucket || options.hostname.split('.')[0];
-
-  auth = options.auth ? options.auth.split(':') : [options.key, options.secret];
-  sign = signer(auth[0], auth[1]);
-  prefix = that.bucket + '.s3.amazonaws.com' + that.pathname;
-
-  ['put', 'post', 'get', 'del', 'head'].forEach(function (method) {
-    var verb = method.replace('del', 'delete').toUpperCase();
-
-    that[method] = function request(pathname, options, callback) {
-      if (typeof options === 'function')
-        return request(pathname, null, options);
-      if (typeof options === 'string' || options instanceof Buffer)
-        return request(pathname, { body: options }, callback);
-
-      var signing = '/' + that.bucket + that.pathname + pathname;
-
-      options = options || {};
-      options.pool = false;
-      options.headers = sign(verb, signing, options.headers);
-
-      return curly[method](prefix + pathname, options, callback);
+      return awsRequest[verb](host + path, opts, callback);
     };
   });
 
